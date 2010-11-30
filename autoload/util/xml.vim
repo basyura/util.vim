@@ -6,6 +6,14 @@ function! util#xml#indent_file(file)
   return util#xml#indent(xml#parseFile(a:file))
 endfunction
 
+function! util#xml#xpath(source, path)
+  let node = xml#parse('<root>' . a:source . '</root>')
+  for dir in split(a:path , '/')
+    let node = node.childNode(dir)
+  endfor
+  return node.value()
+endfunction
+
 function! util#xml#indent(source)
   " for xml
   if type(a:source) == type("")
