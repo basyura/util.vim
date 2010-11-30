@@ -3,7 +3,7 @@
 " 手探り状態
 "
 function! util#xml#indent_file(file)
-  return util#xml#indent(xml#parseFile("xml.txt"))
+  return util#xml#indent(xml#parseFile(a:file))
 endfunction
 
 function! util#xml#indent(source)
@@ -14,10 +14,15 @@ function! util#xml#indent(source)
     " for dom object(dict) which parsed with web-api.vim
     let dom = a:source
   endif
+  " 子ノードがない場合は toString を使ってそのまま返却
+  let nodes = dom.childNodes()
+  if !len(nodes)
+    return dom.toString()
+  endif
 
-  let str = "<" . dom.name . ">\n"
-  let str = s:format_nodes(dom.childNodes() , 1 , str)
-  let str = str . "</" . dom.name . ">"
+  let str  = "<" . dom.name . ">\n"
+  let str  = s:format_nodes(nodes , 1 , str)
+  let str .= "</" . dom.name . ">"
   return str
 endfunction
 
@@ -25,21 +30,18 @@ function! s:format_nodes(nodes, depth, str)
   let indent = repeat("  " ,  a:depth)
   let str = a:str
   for node in a:nodes
-    let str = str . indent . "<" . node.name
+    let str .= indent . "<" . node.name
     for key in keys(node.attr)
-      let str = str . ' ' . key . '="' . node.attr[key] . '"'
+      let str .= ' ' . key . '="' . node.attr[key] . '"'
     endfor
-    let str = str . ">"
+    let str .= ">"
     let children = node.childNodes()
     if len(children) == 0
-      if len(node.child) != 0
-        let str = str . node.child[0]
-      endif
+      let str = str . node.value()
     else
-      let str = str . "\n"
-      let str = s:format_nodes(children , a:depth + 1 , str) . indent
+      let str .= "\n" . s:format_nodes(children , a:depth + 1 , str) . indent
     endif
-    let str = str . "</" . node.name . ">\n"
+    let str .= "</" . node.name . ">\n"
   endfor
   return str
 endfunction
