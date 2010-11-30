@@ -5,12 +5,25 @@
 function! util#xml#indent_file(file)
   return util#xml#indent(xml#parseFile(a:file))
 endfunction
-
+"
+" xpath
+"
 function! util#xml#xpath(source, path)
   let node = xml#parse('<root>' . a:source . '</root>')
   for dir in split(a:path , '/')
-    let node = node.childNode(dir)
+    let node = node.find(dir)
+    if empty(node)
+      return {}
+    endif
   endfor
+  return node
+endfunction
+
+function! util#xml#xpath_text(source, path)
+  let node = util#xml#xpath(a:source , a:path)
+  if empty(node)
+    return ""
+  endif
   return node.value()
 endfunction
 
