@@ -43,7 +43,7 @@ function! util#xml#indent(source)
 
   let str = "<" . dom.name . ">\n"
   let str = s:format_nodes(nodes , 1 , str)
-  let str = str . "</" . dom.name . ">"
+  let str .= "</" . dom.name . ">"
   return str
 endfunction
 
@@ -51,21 +51,21 @@ function! s:format_nodes(nodes, depth, str)
   let indent = repeat("  " ,  a:depth)
   let str = a:str
   for node in a:nodes
-    let str = str . indent . "<" . node.name
+    let str .= indent . "<" . node.name
     for key in keys(node.attr)
-      let str = str . ' ' . key . '="' . node.attr[key] . '"'
+      let str .= ' ' . key . '="' . node.attr[key] . '"'
     endfor
-    let str = str . ">"
+    let str .= ">"
     let children = node.childNodes()
     if len(children) == 0
       if len(node.child) != 0
-        let str = str . node.child[0]
+        let str .= node.child[0]
       endif
     else
-      let str = str . "\n"
+      let str .= "\n"
       let str = s:format_nodes(children , a:depth + 1 , str) . indent
     endif
-    let str = str . "</" . node.name . ">\n"
+    let str .= "</" . node.name . ">\n"
   endfor
   return str
 endfunctio
