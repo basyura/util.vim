@@ -3,13 +3,13 @@
 " 手探り状態
 "
 function! util#xml#indent_file(file)
-  return util#xml#indent(xml#parseFile(a:file))
+  return util#xml#indent(webapi#xml#parseFile(a:file))
 endfunction
 "
 " xpath
 "
 function! util#xml#xpath(source, path)
-  let node = xml#parse('<root>' . a:source . '</root>')
+  let node = webapi#xml#parse('<root>' . a:source . '</root>')
   for dir in split(a:path , '/')
     let node = node.find(dir)
     if empty(node)
@@ -30,7 +30,7 @@ endfunction
 function! util#xml#indent(source)
   " for xml
   if type(a:source) == type("")
-    let dom = xml#parse(a:source)
+    let dom = webapi#xml#parse(a:source)
   else
     " for dom object(dict) which parsed with web-api.vim
     let dom = a:source
